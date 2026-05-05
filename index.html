@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cherry Collection | Chic Boutique</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --cherry-red: #8b0000;
+            --soft-pink: #fdf2f2;
+            --gold: #d4af37;
+            --cream: #fffdfa;
+            --text-dark: #2c2c2c;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background-color: var(--cream); color: var(--text-dark); line-height: 1.6; }
+        h1, h2, h3, .logo { font-family: 'Playfair Display', serif; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Navigation */
+        nav { background: white; padding: 15px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.6rem; font-weight: 700; color: var(--cherry-red); }
+        
+        /* Hero */
+        .hero { height: 50vh; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop') center/cover; display: flex; align-items: center; text-align: center; color: white; }
+        .hero-content { max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.95); padding: 40px; border-radius: 4px; color: var(--text-dark); }
+        .hero h1 { font-size: 2.8rem; color: var(--cherry-red); margin-bottom: 10px; }
+
+        /* UI Elements */
+        .btn { display: inline-block; padding: 10px 22px; background: var(--cherry-red); color: white; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; font-weight: bold; transition: var(--transition); }
+        .btn:hover { background: #600000; }
+        .btn-outline { background: transparent; border: 2px solid var(--cherry-red); color: var(--cherry-red); }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .badge-instock { background: #d4edda; color: #155724; }
+        .badge-soldout { background: #f8d7da; color: #721c24; }
+
+        /* Grid & Cards */
+        .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 60px 0; }
+        .cat-card { height: 200px; position: relative; border-radius: 8px; overflow: hidden; cursor: pointer; }
+        .cat-card img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .cat-overlay { position: absolute; inset: 0; background: rgba(139, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; font-weight: bold; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; margin-bottom: 60px; }
+        .product-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; padding-bottom: 20px; position: relative; }
+        .p-img { width: 100%; height: 280px; object-fit: cover; }
+        .sold-out-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 280px; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--cherry-red); font-size: 1.2rem; }
+
+        /* Admin Panels */
+        #admin-view { display: none; background: #f4f4f4; min-height: 100vh; padding: 40px 0; }
+        .admin-box { background: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; }
+
+        /* Footer */
+        footer { background: #111; color: white; padding: 60px 0; text-align: center; }
+        .social-icons a { color: white; font-size: 1.6rem; margin: 0 15px; transition: 0.3s; }
+        .social-icons a:hover { color: var(--gold); }
+        .footer-admin { margin-top: 30px; font-size: 0.7rem; opacity: 0.3; cursor: pointer; }
+
+        /* Cart Drawer */
+        .cart-drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: white; z-index: 1001; transition: 0.4s; padding: 30px; box-shadow: -5px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .cart-drawer.active { right: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; }
+        .overlay.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <div class="logo">🍒 Cherry Collection</div>
+            <div onclick="toggleCart()" style="cursor:pointer; position:relative;">
+                <i class="fa-solid fa-shopping-bag" style="font-size:1.5rem"></i>
+                <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:var(--gold); color:white; border-radius:50%; width:18px; height:18px; font-size:10px; display:flex; align-items:center; justify-content:center;">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <div id="guest-view">
+        <header class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Cherry Collection</h1>
+                    <p>Sophisticated Fashion & Fine Jewellery</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="container">
+            <div class="categories">
+                <div class="cat-card" onclick="renderGallery('Clothing')">
+                    <img src="https://images.unsplash.com/photo-1539109132314-34a9c655a8c1?w=500">
+                    <div class="cat-overlay">Clothing</div>
+                </div>
+                <div class="cat-card" onclick="renderGallery('Shoes')">
+                    <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500">
+                    <div class="cat-overlay">Shoes</div>
+                </div>
+                <div class="cat-card" onclick="renderGallery('Jewellery')">
+                    <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500">
+                    <div class="cat-overlay">Jewellery</div>
+                </div>
+            </div>
+
+            <h2 id="cat-title" style="text-align:center; margin-bottom:40px;">Featured Collection</h2>
+            <div class="products-grid" id="gallery"></div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <h3 style="color:var(--gold)">Cherry Collection</h3>
+                <p id="footer-addr-display">Loading address...</p>
+                
+                <div class="social-icons" style="margin:25px 0;">
+                    <a href="https://www.facebook.com/profile.php?id=100063135825909" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/cherrycollection001" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://wa.me/263772981484" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+
+                <p>&copy; 2026 Cherry Collection. All rights reserved.</p>
+                <div class="footer-admin" onclick="adminLogin()">Admin Portal</div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="admin-view">
+        <div class="container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h2>Boutique Manager</h2>
+                <button class="btn btn-outline" onclick="location.reload()">Log Out</button>
+            </div>
+
+            <div class="admin-box">
+                <h3>Store Settings</h3>
+                <label>Shop Physical Address</label>
+                <input type="text" id="shop-addr-input" onchange="updateAddress(this.value)" placeholder="Enter shop address">
+            </div>
+
+            <div class="admin-box">
+                <h3>Upload New Item</h3>
+                <input type="file" id="p-file" accept="image/*">
+                <input type="text" id="p-name" placeholder="Item Name">
+                <input type="number" id="p-price" placeholder="Price ($)">
+                <select id="p-cat">
+                    <option value="Clothing">Clothing</option>
+                    <option value="Shoes">Shoes</option>
+                    <option value="Jewellery">Jewellery</option>
+                </select>
+                <button class="btn" id="up-btn" style="width:100%; margin-top:10px" onclick="uploadItem()">Upload Product</button>
+            </div>
+
+            <div class="admin-box">
+                <h3>Live Inventory</h3>
+                <table>
+                    <thead><tr><th>Image</th><th>Name</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="admin-inv-list"></tbody>
+                </table>
+            </div>
+
+            <div class="admin-box">
+                <h3>Customer Orders</h3>
+                <table>
+                    <thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Total</th></tr></thead>
+                    <tbody id="admin-orders-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <h3>Your Shopping Bag</h3>
+        <div id="cart-items" style="flex:1; overflow-y:auto; margin:20px 0;"></div>
+        <div style="border-top:2px solid #eee; padding-top:20px">
+            <h4 id="cart-total" style="margin-bottom:15px">Total: $0.00</h4>
+            <div class="form-group">
+                <input type="text" id="cust-name" placeholder="Your Full Name" style="margin-bottom:10px">
+                <input type="tel" id="cust-phone" placeholder="Phone Number">
+            </div>
+            <button class="btn" style="width:100%; margin-top:20px" onclick="submitOrder()">Place Order via WhatsApp</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        // --- CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "PASTE_YOUR_KEY",
+            authDomain: "PASTE_YOUR_DOMAIN",
+            databaseURL: "PASTE_YOUR_DATABASE_URL",
+            projectId: "PASTE_YOUR_ID",
+            storageBucket: "PASTE_YOUR_BUCKET",
+            appId: "PASTE_YOUR_APP_ID"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let products = [];
+        let bag = [];
+
+        // --- DATA SYNC ---
+        db.ref('products').on('value', snap => {
+            const data = snap.val();
+            products = data ? Object.keys(data).map(k => ({id:k, ...data[k]})) : [];
+            renderGallery();
+            renderAdminInventory();
+        });
+
+        db.ref('orders').on('value', snap => {
+            const data = snap.val();
+            const orders = data ? Object.keys(data).map(k => ({id:k, ...data[k]})) : [];
+            renderAdminOrders(orders);
+        });
+
+        db.ref('settings/address').on('value', snap => {
+            const addr = snap.val() || "Harare, Zimbabwe";
+            document.getElementById('footer-addr-display').innerText = addr;
+            document.getElementById('shop-addr-input').value = addr;
+        });
+
+        // --- GUEST LOGIC ---
+        function renderGallery(filter = 'All') {
+            const container = document.getElementById('gallery');
+            const title = document.getElementById('cat-title');
+            title.innerText = filter === 'All' ? 'Latest Arrivals' : filter;
+            
+            const filtered = filter === 'All' ? products : products.filter(p => p.cat === filter);
+            
+            container.innerHTML = filtered.map(p => `
+                <div class="product-card">
+                    ${p.status === 'Sold Out' ? '<div class="sold-out-overlay">SOLD OUT</div>' : ''}
+                    <img src="${p.img}" class="p-img">
+                    <div style="padding:15px">
+                        <h4>${p.name}</h4>
+                        <p style="color:var(--gold); font-weight:bold; margin:5px 0 15px">$${p.price}</p>
+                        <button class="btn btn-outline" style="width:100%" 
+                            onclick="addToBag('${p.id}')" ${p.status === 'Sold Out' ? 'disabled' : ''}>
+                            ${p.status === 'Sold Out' ? 'Out of Stock' : 'Add to Bag'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToBag(id) {
+            const item = products.find(p => p.id === id);
+            bag.push(item);
+            updateBagUI();
+            if(!document.getElementById('cart-drawer').classList.contains('active')) toggleCart();
+        }
+
+        function updateBagUI() {
+            document.getElementById('cart-count').innerText = bag.length;
+            let total = 0;
+            document.getElementById('cart-items').innerHTML = bag.map((i, index) => {
+                total += parseFloat(i.price);
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+                    <div style="display:flex; align-items:center; gap:10px">
+                        <img src="${i.img}" width="40" height="40" style="object-fit:cover; border-radius:4px">
+                        <span>${i.name}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px">
+                        <span style="font-weight:bold">$${i.price}</span>
+                        <i class="fa-solid fa-trash" style="color:#ff4d4d; cursor:pointer" onclick="removeFromBag(${index})"></i>
+                    </div>
+                </div>`;
+            }).join('');
+            document.getElementById('cart-total').innerText = "Total: $" + total.toFixed(2);
+        }
+
+        function removeFromBag(index) {
+            bag.splice(index, 1);
+            updateBagUI();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-drawer').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            if(!name || !phone || !bag.length) return alert("Please fill your details.");
+
+            const orderData = {
+                customer: name,
+                phone: phone,
+                items: bag.map(i => i.name).join(', '),
+                total: bag.reduce((a, b) => a + parseFloat(b.price), 0),
+                date: new Date().toLocaleDateString()
+            };
+
+            db.ref('orders').push(orderData).then(() => {
+                const waText = `Hi Cherry Collection, I'm ${name}. I'd like to order: ${orderData.items}. Total: $${orderData.total}`;
+                window.open(`https://wa.me/263772981484?text=${encodeURIComponent(waText)}`);
+                bag = [];
+                updateBagUI();
+                toggleCart();
+                alert("Order Placed!");
+            });
+        }
+
+        // --- ADMIN LOGIC ---
+        function adminLogin() {
+            if(prompt("Enter Admin Access Pin:") === 'cherry2024') {
+                document.getElementById('guest-view').style.display = 'none';
+                document.getElementById('admin-view').style.display = 'block';
+            }
+        }
+
+        function uploadItem() {
+            const file = document.getElementById('p-file').files[0];
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const cat = document.getElementById('p-cat').value;
+            const btn = document.getElementById('up-btn');
+
+            if(!file || !name || !price) return alert("Fill all fields");
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Auto-resize for Firebase efficiency
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 500; 
+                    canvas.height = (img.height / img.width) * 500;
+                    ctx.drawImage(img, 0, 0, 500, canvas.height);
+                    
+                    db.ref('products').push({
+                        name, price, cat, 
+                        img: canvas.toDataURL('image/jpeg', 0.7),
+                        status: 'In Stock'
+                    }).then(() => {
+                        alert("Success!");
+                        location.reload();
+                    });
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderAdminInventory() {
+            document.getElementById('admin-inv-list').innerHTML = products.map(p => `
+                <tr>
+                    <td><img src="${p.img}" width="40"></td>
+                    <td>${p.name}</td>
+                    <td>
+                        <span class="badge ${p.status === 'In Stock' ? 'badge-instock' : 'badge-soldout'}" 
+                              style="cursor:pointer" onclick="toggleStatus('${p.id}', '${p.status}')">
+                            ${p.status}
+                        </span>
+                    </td>
+                    <td><i class="fa-solid fa-trash" style="color:red; cursor:pointer" onclick="deleteItem('${p.id}')"></i></td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleStatus(id, current) {
+            const next = current === 'In Stock' ? 'Sold Out' : 'In Stock';
+            db.ref('products/' + id).update({ status: next });
+        }
+
+        function deleteItem(id) {
+            if(confirm("Delete item?")) db.ref('products/' + id).remove();
+        }
+
+        function renderAdminOrders(orders) {
+            document.getElementById('admin-orders-list').innerHTML = orders.reverse().map(o => `
+                <tr>
+                    <td>${o.date}</td>
+                    <td>${o.customer}<br><small>${o.phone}</small></td>
+                    <td>${o.items}</td>
+                    <td>$${o.total}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateAddress(val) {
+            db.ref('settings/address').set(val);
+        }
+    </script>
+</body>
+</html>
